@@ -127,7 +127,7 @@ $total = $row['total'];
 <body>
 
     <div class="navbar">
-        🧺 Laundry System - User Panel
+        🧺 Laundry System - User Panellll
     </div>
 
     <div class="container">
