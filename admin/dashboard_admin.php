@@ -7,6 +7,16 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
 
 include "../koneksi.php";
 
+// Di file admin/index.php atau sidebar admin
+$query_notif = mysqli_query($conn, "SELECT COUNT(*) as jml FROM transaksi WHERE status='baru'");
+$notif = mysqli_fetch_assoc($query_notif);
+
+if ($notif['jml'] > 0) {
+    echo "<span class='badge bg-danger'> Ada " . $notif['jml'] . " Pesanan Baru!</span>";
+}
+
+include "../koneksi.php";
+
 // Hitung data
 $pelanggan = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM pelanggan"));
 $transaksi = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM transaksi"));
@@ -127,7 +137,19 @@ $user = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM users"));
         <h2>👑 Admin Panel</h2>
         <a href="dashboard_admin.php">Dashboard</a>
         <a href="../pelanggan/data1.php">Data Pelanggan</a>
-        <a href="../transaksi/data.php">Data Transaksi</a>
+        <a href="../transaksi/data.php"> Data Transaksi 
+    <?php
+            // Ambil koneksi karena variabel $conn dibutuhkan
+            include "../koneksi.php";
+            $q_notif = mysqli_query($conn, "SELECT COUNT(*) as jml FROM transaksi WHERE status='baru'");
+            $n = mysqli_fetch_assoc($q_notif);
+
+            // Jika jumlahnya lebih dari 0, tampilkan badge merah
+            if ($n['jml'] > 0) {
+                echo "<span style='background:#e74a3b; color:white; padding:2px 8px; border-radius:10px; font-size:12px; margin-left:5px;'>" . $n['jml'] . "</span>";
+            }
+            ?>
+        </a>
         <a href="user.php">Kelola User</a>
         <a href="../logout.php" class="logout">Logout</a>
     </div>

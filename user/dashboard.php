@@ -1,17 +1,21 @@
 <?php
 session_start();
+// 1. Pastikan hanya user yang bisa mengakses halaman ini
 if (!isset($_SESSION['role']) || $_SESSION['role'] != 'user') {
     header("Location: ../login.php");
     exit();
 }
 
-include "../koneksi.php";
+include "../koneksi.php"; //
 
-$username = $_SESSION['username'];
+// 2. Ambil ID User dari session (ID ini harus sudah diset saat proses_login.php)
+$id_user = $_SESSION['id_pelanggan'];
+$username = $_SESSION['username']; //
 
-$data = mysqli_query($conn, "SELECT COUNT(*) as total FROM transaksi WHERE id_pelanggan=''");
+// 3. Query hitung total transaksi milik user ini saja agar angka di card berubah
+$data = mysqli_query($conn, "SELECT COUNT(*) as total FROM transaksi WHERE id_user = '$id_user'");
 $row = mysqli_fetch_assoc($data);
-$total = $row['total'];
+$total = $row['total']; //
 ?>
 
 <!DOCTYPE html>
@@ -21,6 +25,7 @@ $total = $row['total'];
     <title>Dashboard User</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        /* */
         * {
             margin: 0;
             padding: 0;
@@ -127,13 +132,12 @@ $total = $row['total'];
 <body>
 
     <div class="navbar">
-        🧺 Laundry System - User Panellll
+        🧺 Laundry System - User Panel
     </div>
 
     <div class="container">
         <div class="welcome">
-            👋 Selamat datang, <b><?= $username; ?></b>
-        </div>
+            👋 Selamat datang, <b><?= $username; ?></b> </div>
 
         <div class="card">
             <h1><?= $total; ?></h1>
@@ -141,8 +145,8 @@ $total = $row['total'];
         </div>
 
         <div class="buttons">
-            <a href="../transaksi/tambah.php" class="btn btn-primary">+ Input Transaksi</a>
-            <a href="lihat_transaksi.php" class="btn btn-info">📄 Lihat Transaksi</a>
+            <a href="tambah_transaksi.php" class="btn btn-primary">+ Input Transaksi</a>
+            <a href="transaksi.php" class="btn btn-info">📄 Lihat Riwayat</a>
             <a href="../logout.php" class="btn btn-danger">Logout</a>
         </div>
     </div>

@@ -75,7 +75,7 @@ function hitungTotal() {
         <button type="submit">Simpan Transaksi</button>
     </form>
     <br>
-    <a href="transaksi.php" class="btn btn-secondary">Lihat Semua Transaksi Saya</a>
+    <a href="lihat_transaksi.php" class="btn btn-secondary">Lihat Semua Transaksi Saya</a>
 </div>
 </body>
 </html>

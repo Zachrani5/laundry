@@ -2,7 +2,7 @@
 session_start();
 include '../koneksi.php';
 
-// Pastikan user
+// Pastikan user sudah login
 if (!isset($_SESSION['role']) || $_SESSION['role'] != 'user') {
     header("Location: ../login.php");
     exit();
@@ -15,7 +15,10 @@ $no_hp = isset($_POST['no_hp']) ? trim($_POST['no_hp']) : '';
 $id_paket = intval($_POST['id_paket']);
 $berat = floatval($_POST['berat']);
 
-// 1️⃣ Cek apakah pelanggan sudah ada
+// Ambil ID User dari session (ID ini didapat saat login)
+$id_user = $_SESSION['id_pelanggan'];
+
+// 1. Cek atau input data pelanggan
 $cek = mysqli_query($conn, "SELECT * FROM pelanggan WHERE nama='$nama_pelanggan'");
 $pelanggan = mysqli_fetch_assoc($cek);
 
@@ -26,22 +29,23 @@ if (!$pelanggan) {
     $id_pelanggan = $pelanggan['id_pelanggan'];
 }
 
-// 2️⃣ Ambil harga paket
+// 2. Ambil harga paket untuk hitung total
 $data_paket = mysqli_query($conn, "SELECT * FROM paket WHERE id_paket='$id_paket'");
 $paket = mysqli_fetch_assoc($data_paket);
-$harga = $paket['harga'];
+$total = $berat * $paket['harga'];
 
-// 3️⃣ Hitung total
-$total = $berat * $harga;
-
-// 4️⃣ Insert transaksi
-mysqli_query($conn, "INSERT INTO transaksi 
-(id_pelanggan, id_paket, berat, total, status, tanggal_masuk, tanggal_selesai, created_at)
+// 3. Simpan Transaksi dengan menyertakan id_user
+// Kolom id_user sangat penting agar transaksi muncul di dashboard user tersebut
+$query = "INSERT INTO transaksi 
+(id_user, id_pelanggan, id_paket, berat, total, status, tanggal_masuk, created_at)
 VALUES
-('$id_pelanggan','$id_paket','$berat','$total','baru', CURDATE(), CURDATE(), NOW())
-") or die(mysqli_error($conn));
+('$id_user', '$id_pelanggan', '$id_paket', '$berat', '$total', 'baru', CURDATE(), NOW())";
 
-// Redirect ke daftar transaksi user
-header("Location: transaksi.php");
-exit();
+if (mysqli_query($conn, $query)) {
+    // Redirect kembali ke dashboard agar angka total transaksi langsung terupdate
+    header("Location: dashboard.php");
+    exit();
+} else {
+    die("Gagal simpan transaksi: " . mysqli_error($conn));
+}
 ?>
